@@ -1,30 +1,44 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view/>
+  <app-header></app-header>
+  <router-view class="current-view"/>
 </template>
 
+<script>
+  import AppHeader from "./components/global/header" ;
+
+export default {
+  name:'MCQMarker',
+  components:{
+    AppHeader
+  }
+}
+</script>
+
+
 <style>
+
+
+body{
+  margin:0;
+  padding:0;
+  box-sizing: border-box;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: black;
 }
 
-#nav {
-  padding: 30px;
+.current-view{
+  padding:0 15px;
 }
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
+a:visited,a{
+  color:#000000;
+  text-decoration: none;
 }
 
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
+
 </style>
