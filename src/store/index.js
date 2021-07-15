@@ -92,7 +92,7 @@ export default createStore({
             commit('setIsLoggedInMut',true);
             resolve({token:res.data.token, user:res.data.user});
           }).catch(err=>{
-            reject(err);
+            reject(err.response);
           })
       });
     },
@@ -108,7 +108,7 @@ export default createStore({
            resolve(user.data);
          }).catch(err=>{
            console.log(err);
-           reject(err);
+           reject(err.response);
          })
     })
   }
@@ -142,7 +142,7 @@ export default createStore({
          resolve(res.data);
        }).catch(err=>{
          console.log(err);
-         reject(err);
+         reject(err.response);
        })
   })
   },
@@ -162,7 +162,7 @@ export default createStore({
 
          resolve(finalObj);
        }).catch(err=>{
-         reject(err);
+         reject(err.response);
        })
   })
   },
@@ -181,7 +181,7 @@ export default createStore({
          commit('setCurrentSheetMut',finalObj);
          resolve(finalObj);
        }).catch(err=>{
-         reject(err);
+         reject(err.response);
        })
     });
   },
@@ -200,7 +200,7 @@ export default createStore({
          commit('setCurrentSheetMut',finalObj);
          resolve(finalObj);
        }).catch(err=>{
-         reject(err);
+         reject(err.response);
        })
     });
   },
@@ -217,7 +217,7 @@ export default createStore({
       }
       ).then(res=>{
         resolve(res);
-      }).catch(err=>{reject(err);})
+      }).catch(err=>{reject(err.response);})
     });
   },
 

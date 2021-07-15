@@ -8,8 +8,9 @@
             <div class="step1" v-show="step==1">
                   
                 <h3 class="text-center text-xl font-bold @apply mb-2">Pleliminary Information</h3>
+                <custom-input placeholder="Enter unique sheet name" label="Sheet Name" :required="true" v-model="formData.sheet_name" name="sheetname" id="sheetname"/>
                 <custom-input placeholder="University name" label="University" v-model="formData.university" name="university" id="university"/>
-                <custom-input required placeholder="School name" label="School" v-model="formData.school" name="school" id="school"/>
+                <custom-input placeholder="School name" label="School" v-model="formData.school" name="school" id="school"/>
                 <custom-input placeholder="Department name" label="Department" v-model="formData.department" name="department" id="department"/>
                 <custom-input placeholder="Class name" label="Class" v-model="formData.classe" name="class" id="class"/>
 
@@ -34,6 +35,17 @@
                 <custom-select  required label="Number of Questions" v-model="formData.questions" @changed="onQuestionsChanged" name="questions" id="questions" :options="['5','10', '20','25', '30', '40', '50']"/>
                 <custom-select required label="Number of Choices" v-model="formData.choices"  name="choices" id="choices" :options="['2', '3', '4', '5']"/>
                 <custom-select label="Choices Labels" v-model="formData.choiceLabels"  name="choices-labels" id="choices-labels" :options="['A-B-C', 'i-ii-iii', '1-2-3']"/>
+                <custom-input 
+                    v-model="formData.failMark" 
+                    :required="true"
+                    class=""
+                    label="Fail Mark" 
+                    :id="`fail-mark`" 
+                    :name="`fail-mark`" 
+                    placeholder="Fail mark value"
+                    type="number"
+                    
+                    />
 
             </div>
 
@@ -57,11 +69,12 @@
                         :name="`q${num}-mark`" 
                         placeholder="Enter Mark" 
                         class="mr-3 mark-input"
+                        :required="true"
                         
                         />
 
                         <!-- we produce boxes to specify the percentage value for each answer for a question -->
-                       <template v-if="correctAnswers[`${num}`]">
+                       <template v-if="correctAnswers[`${num}`] && answersPercentages[`${num}`]">
                             <div class="percentage flex items-center mr-2" 
                             v-for="(ans,index) in correctAnswers[`${num}`].split(' ')" 
                             :key="`${num}perdiv${index}`">
@@ -69,11 +82,14 @@
                                 <input type="number" 
                                 :name="`percent${num}${index}`" 
                                 :id="`percent${num}${index}`" 
+                                :required="true"
                                 v-model="answersPercentages[`${num}`][`${ans}`]"
                                 :min="0" :max="100">
                             </div>
                         </template>
+
                     </div>
+                    
 <!-- 
                     <custom-input 
                     v-model="answersRemarks[`${num}`]" 
@@ -136,7 +152,9 @@
                     bubble:"Circles",
                     questions:"10",
                     choices:"4",
-                    choiceLabels:"A-B-C"
+                    choiceLabels:"A-B-C",
+                    failMark:"0",
+                    sheet_name:""
                 },          
 
             }
@@ -188,56 +206,89 @@
                         this.correctAnswers[`${i}`] = defaultVal;
                         this.answersRemarks[`${i}`] = "no remark";
                         this.markAllocation[`${i}`] = "1";
-                        this.answersPercentages[`${i}`][defaultVal]=100;
+                        this.answersPercentages[`${i}`]={};
+                        this.answersPercentages[`${i}`][defaultVal]="100";
                     }
+                    console.log(this.answersPercentages);
                 }
             },
 
             chkdAnswersChanged(values,question){
                 //when the checked answers for a question changes, we reinitialize its percentages
                 this.answersPercentages[`${question}`] = {};
-                for(let val of values) this.answersPercentages[`${question}`][val] = 0;
+                 const averagePercentage = (100 /values.length).toFixed(1);
+                for(let val of values) {                 
+                    this.answersPercentages[`${question}`][val] = `${averagePercentage}`;                   
+                    }
             },
 
             async validateForm(){
 
-                this.formData.correctAnswers = Object.values(this.correctAnswers);
-                this.formData.marksAllocation = Object.values(this.markAllocation);
-
-                this.formData.remarks = Object.values(this.answersRemarks);
-
-                this.formData.choiceList= this.generateChoicesOptions();
-
-                const loader = this.$loading.show();
-                try{
-                    let newSheet;
-                    if(!this.isEditMode){
-                        newSheet = await this.createQuiz(this.formData);
-                    }
-                    else{
-                       newSheet = await this.$store.dispatch('editQuiz',{id:this.formData.id,editData:this.formData})
-                    }
-                    this.$swal({
-                        toast:true,
-                        text:`Sheet ${!this.isEditMode?'created':'modified'} successfully`,
-                        icon:'success',
-                        timer:5000,
-                        showConfirmButton:false
-                    })
-
-                    console.log(newSheet);
-                    this.$router.push( `/view-sheet/${newSheet.id}`);
-
-                }
-                catch(err){
-                    this.$swal({
+                if(this.formData.sheet_name==="" || this.formData.failMark===""){
+                     this.$swal({
                         icon:'error',
-                        title:'Error',
-                        text:`Unable to ${!this.isEditMode?'create':'modify'} Sheet:`+err.toString(),
+                        title:'Form Error',
+                        text:`Please fill the required fields(*) and retry`,
                         showCloseButton:true
                     })
                 }
-                loader.hide();
+                else{
+
+                    this.formData.correctAnswers = Object.values(this.correctAnswers);
+
+                    //total mark for each question
+                    this.formData.marksAllocation = Object.values(this.markAllocation);
+
+                    this.formData.remarks = Object.values(this.answersRemarks);
+
+                    this.formData.choiceList= this.generateChoicesOptions();
+                    
+                    //how marks are shared amongst correct answers for each question
+                    this.formData.marksDistribution = [];
+                    const markPercentages = Object.values(this.answersPercentages);       
+                    for(let dist of markPercentages){
+                        let temp = [];
+                        for(let key of Object.keys(dist)){
+                            temp.push(`${key} ${dist[key]}`);
+                        }
+                        this.formData.marksDistribution.push(`${temp.join(';')}`);
+                    }
+                    console.log(this.formData.marksDistribution);
+
+
+                    const loader = this.$loading.show();
+                    try{
+                        let newSheet;
+                        if(!this.isEditMode){
+                            newSheet = await this.createQuiz(this.formData);
+                        }
+                        else{
+                        newSheet = await this.$store.dispatch('editQuiz',{id:this.formData.id,editData:this.formData})
+                        }
+                        this.$swal({
+                            toast:true,
+                            text:`Sheet ${!this.isEditMode?'created':'modified'} successfully`,
+                            icon:'success',
+                            timer:5000,
+                            showConfirmButton:false
+                        })
+
+                        console.log(newSheet);
+                        this.$router.push( `/view-sheet/${newSheet.id}`);
+
+                    }
+                    catch(err){
+                        console.log(err.data.error);
+                        this.$swal({
+                            icon:'error',
+                            title:'Error',
+                            text:`Unable to ${!this.isEditMode?'create':'modify'} Sheet:`+(err.data.error||err.data),
+                            showCloseButton:true
+                        })
+                    }
+                    loader.hide();
+
+                }
                 
             }
         },
@@ -248,18 +299,34 @@
 
             if(this.isEditMode && this.$route.query.sheetid){
                 const loader = this.$loading.show();
-                console.log(`id is ${this.$route.query.sheetid}`);
                 this.$store.dispatch('getQuiz',this.$route.query.sheetid).then(
                     res=>{
                         
                         this.formData = {...res, choices:res.choices.toString(),
-                         questions:res.questions.toString(), credit:res.credit.toString() };
+                         questions:res.questions.toString(), credit:res.credit.toString(), failMark:res.failMark.toString() };
 
-                        for(let i=0; i<this.formData.remarks.length;i++){
+                        for(let i=0; i<parseInt(this.formData.questions); i++){
                             this.answersRemarks[`${i}`]= this.formData.remarks[i];
                             this.correctAnswers[`${i}`] = this.formData.correctAnswers[i];
-                            this.markAllocation[`${i}`] = this.formData.marksAllocation[i];
+                            this.markAllocation[`${i}`] = this.formData.marksAllocation[i];  
+                            
+                            
                         }
+
+                        let i = 0;
+                        for (let dist of this.formData.marksDistribution){
+                            let dist_map = {}
+                            const dist_splitted = dist.split(";")
+                            for (let val of dist_splitted){
+                                const ans = val.split(" ")[0]
+                                const percentage = val.split(" ")[1]
+                                dist_map[ans] = percentage
+                            }
+
+                            this.answersPercentages[`${i}`] = dist_map
+                            i++;
+                            }
+                        console.log(this.answersPercentages)
                     }
                     
                     ).catch(err=>{
@@ -291,7 +358,7 @@
         padding:30px 0;
     }
     .percentage input{
-        width:40px;
+        width:60px;
         height:auto;
         padding:3px 2px;
         border:1px solid #2f48ff;
@@ -300,7 +367,7 @@
         outline:none;
     }
     .mark-input{
-        width:70px;
+        width:90px;
     }
     .create-form{
         padding:15px 30px;

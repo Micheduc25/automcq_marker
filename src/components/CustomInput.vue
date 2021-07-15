@@ -1,7 +1,7 @@
 <template>
     <div class="custom-input">
         
-        <label class="input-label" :for="id">{{label}}</label>
+        <label class="input-label" :for="id">{{label}} <span v-if="required" class="required-star">*</span></label>
         
         <input ref="myinput" :value="modelValue" :required="required" @input="updateInput($event.target.value)" :name="name" :id="id" :type="type" :placeholder="placeholder" :min="numMin"  />
         <span v-if="errorMsg" class="text-red-500 text-xs">{{errorMsg}}</span>
@@ -57,6 +57,7 @@
         flex-direction: column;
         align-items: flex-start;
         @apply mb-3;
+        position:relative;
     }
    .custom-input input:focus{
         outline:none;
@@ -72,5 +73,13 @@
 
     .input-label{
         margin-bottom: 5px;
+    }
+    .required-star{
+        /* position:absolute;
+        top:0;
+        right:10px; */
+        color:red;
+        font-weight: 900;
+        font-size: 20px;
     }
 </style>

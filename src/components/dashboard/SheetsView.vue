@@ -9,6 +9,10 @@
             </div>
         </div>
 
+        <div v-if="!quizes||quizes.length===0" class="no-quiz">
+            <h1>No Quiz has been created yet. Click the "Create Sheet" button to create a sheet</h1>
+        </div>
+
         <router-link to="create-sheet" class="floating">
             Create Sheet
         </router-link>
@@ -68,6 +72,18 @@
         grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
         column-gap:10px;
         row-gap:10px;
+        min-height: calc(100vh - 80px);
+        position:relative;
+
+    }
+    .no-quiz{
+        position:absolute;
+        left:50%;
+        top:50%;
+        transform:translate(-50%,-50%);
+        font-weight: bold;
+        font-size:25px;
+        color:#ccc;
 
     }
 
