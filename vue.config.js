@@ -1,4 +1,5 @@
 module.exports = {
+
     css: {
       loaderOptions: {
         sass: {
@@ -22,17 +23,25 @@ module.exports = {
       },
 
         ]
-   }
+   },
+  //  externals: {
+  //   // only define the dependencies you are NOT using as externals!
+  //   // canvg: "canvg",
+    
+  //   // dompurify: "dompurify"
+  // }
   },
 
   chainWebpack: config => {
-    // SWF Loader
+    
     config.module
       .rule('swf')
       .test(/\.swf$/)
       .use('swf-loader')
         .loader('swf-loader')
         .end()
+
+        // config.externals({html2canvas: "html2canvas"})
      
   }
 };

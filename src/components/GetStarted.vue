@@ -1,8 +1,8 @@
 <template>
     <div class="get-started">
         <div class="get-started__wrapper">
-            <h1>Auto MCQ Marker</h1>
-            <p>
+            <h1>UBa MCQ Marker</h1>
+            <p class="about">
                 Auto mcq marker is a platform which enables you to automatically correct
                 MCQ sheets. You equally have the ability to create your own sheets and set mark allocations
                 for questions on the sheets.<br/>
@@ -10,7 +10,7 @@
                 bellow.
             </p>
             
-            <router-link to="/create-sheet" exact class="start-button">Get Started</router-link>
+            <router-link to="/auth/signup" exact class="start-button">Get Started</router-link>
         </div>
     </div>
 </template>

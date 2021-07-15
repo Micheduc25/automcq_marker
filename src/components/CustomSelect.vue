@@ -3,7 +3,13 @@
         
         <label class="input-label" :for="id">{{label}}</label>
         
-        <select ref="myinput" :required="required" @input="updateInput()" :name="name" :id="id"  :value="value" >
+        <select ref="myinput" :required="required" 
+            :value="modelValue" 
+            @input="updateInput($event.target.value)" 
+            :name="name" 
+            :id="id"  
+            
+        >
             <option v-for="opt in options" :value="opt" :key="`${opt}select`">
                 {{opt}}
             </option>
@@ -15,7 +21,7 @@
     export default {
         name:"CustomSelect",
         props:{
-            value:String,
+            modelValue:String,
             
             required:{
                 default:false,
@@ -40,11 +46,13 @@
                 default:()=>[]
             }
         },
+        emits: ['update:modelValue', 'changed'],
 
         methods:{
-            updateInput(){
-                console.log("value is ", this.$refs.myinput.value);
-                this.$emit("input",this.$refs.myinput.value);
+            updateInput(val){
+                // console.log("value is ", this.$refs.myinput.value);
+                this.$emit("changed",val);
+                this.$emit("update:modelValue",val);
             }
         }
         

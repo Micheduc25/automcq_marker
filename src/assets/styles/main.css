@@ -60,3 +60,43 @@
   * @import "utilities/background-patterns";
   * @import "utilities/skew-transforms";
   */
+
+  /* Tooltip container */
+  .tooltip {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    opacity:0;
+    width: 120px;
+    background-color: rgba(0, 0, 0, 0.685);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    transition:.2s;
+  
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1500;
+    top:-40px;
+    left:50%;
+    transform:translateX(-50%);
+  }
+  
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity:1;
+  }
+  .tooltip .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: black transparent transparent transparent;
+  }

@@ -12,11 +12,13 @@ export default {
   components: {
     GetStarted
   }
+  ,
+
 }
 </script>
 
 <style lang="css" scoped>
-  .home{
+  /* .home{
    
-  }
+  } */
 </style>

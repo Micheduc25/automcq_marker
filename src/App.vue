@@ -31,8 +31,8 @@ body{
   color: black;
 }
 
-.current-view{
-  padding:0 15px;
+.current-view,{
+  /* padding:0 15px; */
 }
 
 a:visited,a{

@@ -3,7 +3,8 @@
         
         <label class="input-label" :for="id">{{label}}</label>
         
-        <input ref="myinput" :required="required" @input="updateInput()" :name="name" :id="id" :type="type" :placeholder="placeholder" :value="value" />
+        <input ref="myinput" :value="modelValue" :required="required" @input="updateInput($event.target.value)" :name="name" :id="id" :type="type" :placeholder="placeholder" :min="numMin"  />
+        <span v-if="errorMsg" class="text-red-500 text-xs">{{errorMsg}}</span>
     </div>
 </template>
 
@@ -11,7 +12,7 @@
     export default {
         name:"CustomInput",
         props:{
-            value:String,
+            modelValue:String,
             type:{
                 default:'text',
                 type:String
@@ -35,13 +36,15 @@
             id:{
                 required:true,
                 type:String
-            }
+            },
+            errorMsg:{type:String, default:''},
+            numMin:{type:Number, default:1}
         },
+        emits:["update:modelValue"],
 
         methods:{
-            updateInput(){
-                // console.log("value is ", this.$refs.myinput.value);
-                this.$emit("input",this.$refs.myinput.value);
+            updateInput(val){
+                this.$emit("update:modelValue",val.toString());
             }
         }
         
@@ -55,8 +58,9 @@
         align-items: flex-start;
         @apply mb-3;
     }
-    input:focus{
+   .custom-input input:focus{
         outline:none;
+        
     }
     .custom-input input{
         width:100%;
