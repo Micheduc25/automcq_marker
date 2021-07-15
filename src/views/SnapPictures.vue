@@ -22,8 +22,9 @@
             <upload-images @change="onImageDrop" />
         </div>
 
-        <div class="correct-button flex justify-center items-center">
-                <button @click="correctSheets" class="focus:outline-none mt-4 bg-blue-600 text-white px-10 py-4">Correct</button>
+        <div v-if="(mode=='snap'&& snappedImagesData.length) || (mode=='upload'&& uploadedImagesData.length)>0" class="correct-button flex justify-center items-center">
+                <button @click="correctSheets" class="focus:outline-none mt-4 mr-4 bg-blue-600 text-white px-10 py-4">Correct</button>
+                <button @click="saveSheets" class="focus:outline-none mt-4 bg-blue-600 text-white px-10 py-4">Save</button>
             
         </div>
 
@@ -206,6 +207,10 @@
                         
                     }
                 
+            },
+
+            async saveSheets(){
+
             }
     
         },
