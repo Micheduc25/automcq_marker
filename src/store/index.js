@@ -222,14 +222,35 @@ export default createStore({
   },
 
   // eslint-disable-next-line no-unused-vars
-  uploadAnswerSheets({commit},data){
+  uploadAnswerSheets({commit,state},data){
 
     return new Promise((resolve,reject)=>{
       axios.post(`${apiUrl}/upload-sheets/`,data,{
         headers:{
-          "Content-Type":"multipart/form-data"
+          "Content-Type":"multipart/form-data",
+          'Authorization': `Token ${state.token||localStorage.getItem('auth-token')}`,
+
         }
       }).then(res=>resolve(res)).catch(err=>reject(err));
+      // commit('');
+    });
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  saveQuizImages({commit,state},formData){
+    return new Promise((resolve,reject)=>{
+      axios.post(`${apiUrl}/images/`,formData,{
+        headers:{
+          'Authorization': `Token ${state.token||localStorage.getItem('auth-token')}`,
+          "Content-Type":"multipart/form-data"
+        }
+      }).then(res=>{
+        const data = res.data;
+        console.log(data);
+        resolve(data);
+      
+      })
+      .catch(err=>reject(err.response));
       // commit('');
     });
   },

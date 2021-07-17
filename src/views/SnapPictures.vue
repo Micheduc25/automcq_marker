@@ -160,24 +160,7 @@
                     }
                     else{
                         
-                        const imagesForm = new FormData();
-                        
-                        imagesForm.set('sheet_id',this.$route.params.id);
-                        
-                        if(this.mode==='upload')
-                            for (let img of Object.values(this.uploadedImagesData)){ 
-                                imagesForm.append('images', img);
-                            }
-                        
-                        else{
-                            for(let img of Object.values(this.snappedImagesData)){
-                                const res =  await fetch(img.data);
-                                const  blob = await res.blob();
-                                const imgFile = new File([blob], `snapsheet-${this.currentIm}.png`, { type: 'image/png' });
-                                imagesForm.append('images',imgFile);
-                            }
-                            console.log(imagesForm.get('images'));
-                        }
+                        const imagesForm = await this.generateImagesFormData();
                         const loader = this.$loading.show();
                         try{
                             await this.$store.dispatch(
@@ -209,8 +192,56 @@
                 
             },
 
-            async saveSheets(){
+            async generateImagesFormData(){
+                const imagesForm = new FormData();
+                        
+                imagesForm.set('sheet_id',this.$route.params.id);
+                
+                if(this.mode==='upload')
+                    for (let img of Object.values(this.uploadedImagesData)){ 
+                        imagesForm.append('images', img);
+                    }
+                
+                else{
+                    for(let img of Object.values(this.snappedImagesData)){
+                        const res =  await fetch(img.data);
+                        const  blob = await res.blob();
+                        const imgFile = new File([blob], `snapsheet-${this.currentIm}.png`, { type: 'image/png' });
+                        imagesForm.append('images',imgFile);
+                    }
+                   
+                }
+                return imagesForm;
+            },
 
+            async saveSheets(){
+                const imagesForm = await this.generateImagesFormData();
+                const loader = this.$loading.show();
+                try{
+                   const sheets =  await this.$store.dispatch('saveQuizImages',
+                    imagesForm
+                    );
+                    console.log(sheets);
+
+                     this.$swal({
+                            title:'Success',
+                            text:'Sheets saved Successfully',
+                            toast:true,
+                            timer:4000,
+                            icon:'success'
+                        });
+                }
+                catch(err){
+                    console.log(err);
+                     this.$swal({
+                            title:'Save Error',
+                            text:'An error occured while trying to save the sheet images',
+                            showCancelButton:true,
+                            icon:'error'
+                        });
+                }
+
+                loader.hide();
             }
     
         },

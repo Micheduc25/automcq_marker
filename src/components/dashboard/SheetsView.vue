@@ -5,7 +5,7 @@
                 <img src="@/assets/images/ans-sheet.png" alt="sheet image">
             </div>
             <div class=" bg-blue-500 text-white w-full py-4 px-2">
-                {{quiz.school}}: {{quiz.classe}}
+                {{quiz.sheet_name}}
             </div>
         </div>
 

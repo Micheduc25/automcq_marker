@@ -5,22 +5,24 @@
 
             <ul class="actions-list">
                 <li @click="selectView('sheets')" :class="{'active':view=='sheets'}"  class="dashboard-action" > <img src="@/assets/images/exam1.png" alt="exam" /> My Sheets</li>
-                <li @click="selectView('students')" :class="{'active':view=='students'}" class="dashboard-action"> <img src="@/assets/images/student1.png" alt="student"/> My Students</li>
+                <li @click="selectView('saved')" :class="{'active':view=='students'}" class="dashboard-action"> <img src="@/assets/images/student1.png" alt="student"/> Saved Sheets</li>
                 <li @click="selectView('more')" :class="{'active':view=='more'}" class="dashboard-action">+ More...</li>
             </ul>
         </aside>
 
         <main class="dashboard-body p-4">
-            <sheets-view v-show="view==='sheets'" />
+            <sheets-view v-if="view==='sheets'" />
+            <saved-images v-else-if="view==='saved'" />
         </main>
     </div>
 </template>
 
 <script>
+import SavedImages from '../components/dashboard/SavedImages.vue';
 import SheetsView from '../components/dashboard/SheetsView.vue';
     
     export default {
-  components: { SheetsView },
+  components: { SheetsView, SavedImages },
         name:"Dashboard",
 
         data(){
