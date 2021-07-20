@@ -230,6 +230,8 @@
                             timer:4000,
                             icon:'success'
                         });
+                    
+                    this.$router.push('/dashboard');
                 }
                 catch(err){
                     console.log(err);

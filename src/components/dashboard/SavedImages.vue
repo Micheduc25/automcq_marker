@@ -11,11 +11,11 @@
         </div>
 
         <ul class="sheets-list">
-            <div class="list-titles"><span>Selected</span><span>Name</span><span>Images</span><span>Actions</span></div>
-            <li class="sheets-list-item border border-gray-300 rounded-md shadow-lg mb-3 p-3">
-                <input class="w-5 h-5 cursor-pointer mr-4"  type="checkbox" v-model="checkall" name="check" id="check">
-                <div class="sheet font-semibold">Sheet Name Here</div>
-                <div class="num-images">142</div>
+            <div class="list-titles"><span>Selected</span><span>Name</span><span>Pending Images</span><span>Actions</span></div>
+            <li v-for="sheet in pendingSheets" :key="`sheet${sheet.id}`" class="sheets-list-item border border-gray-300 rounded-md shadow-lg mb-3 p-3">
+                <input class="w-5 h-5 cursor-pointer mr-4"  type="checkbox" v-model="checkBoxes[sheet.id]" name="check" id="check">
+                <div class="sheet font-semibold">{{sheet.sheet_name}}</div>
+                <div class="num-images">{{sheet.pending_images}}</div>
                 <div class="actions flex items-center">
                     <button class="bg-blue-700 hover:bg-blue-500 p-2 shadow-lg mr-2"><img class="w-5" src="@/assets/images/edit.png" alt="edit images"></button>
                     <button  class="bg-red-700 hover:bg-red-500 p-2 shadow-lg mr-2"><img class="w-5" src="@/assets/images/trash.png" alt="delete images"></button>
@@ -35,7 +35,47 @@ import CustomSelect from '../CustomSelect.vue'
         data(){
             return {
                 checkall:false,
-                filterBy:'Date'
+                filterBy:'Date',
+                checkBoxes:{}
+            }
+        },
+
+        computed:{
+            pendingSheets(){
+                return this.$store.getters.quizes.filter((q=>q.pending_images>0))
+            }
+        }
+        ,
+        watch:{
+            checkall(newVal, oldVal){
+                if(newVal!==oldVal){
+                    for(let quiz of this.pendingSheets){
+                        this.checkBoxes[quiz.id]=newVal;
+                    }
+                }
+                
+            }
+        },
+
+        created(){
+
+            if(this.$store.getters.quizes.length<0){
+                const loader = this.$loading.show();
+                this.$store.dispatch('getQuizList').then(quizes=>{
+                    
+                    console.log(quizes);
+                })
+                .catch(
+                    // eslint-disable-next-line no-unused-vars
+                    err=>
+                    {
+                    this.$swal({
+                            title:'Eror',
+                            text:`Could not load quizes`,
+                            showCloseButton: true,
+                            icon:'error'
+                        })
+                }).finally(()=>{loader.hide();})
             }
         }
     }

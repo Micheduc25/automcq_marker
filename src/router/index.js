@@ -111,7 +111,7 @@ router.beforeEach(async(to, from, next) => {
           try{
             await store.dispatch('getUser',token);
             await store.dispatch('setIsLoggedIn',true);
-            next();
+            next('/dashboard');
           }
           catch(err){
             if(from.fullPath ==="/") next("/")
@@ -127,10 +127,11 @@ router.beforeEach(async(to, from, next) => {
     }
     else{
       //if there is no user but a token is available we attempt to login
-      if(store.getters.user==null && token!==null && token!==''){
+      if(store.getters.user==null && token!==null){
         try{
           await store.dispatch('getUser',token);
           store.dispatch('setIsLoggedIn',true);
+          
           next();
         }
         catch(err){

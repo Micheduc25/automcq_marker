@@ -79,8 +79,8 @@
             }
         },
 
-        created(){
-
+        async created(){
+            
         },
 
         mounted(){

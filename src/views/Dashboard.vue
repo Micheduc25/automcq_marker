@@ -5,7 +5,7 @@
 
             <ul class="actions-list">
                 <li @click="selectView('sheets')" :class="{'active':view=='sheets'}"  class="dashboard-action" > <img src="@/assets/images/exam1.png" alt="exam" /> My Sheets</li>
-                <li @click="selectView('saved')" :class="{'active':view=='students'}" class="dashboard-action"> <img src="@/assets/images/student1.png" alt="student"/> Saved Sheets</li>
+                <li @click="selectView('saved')" :class="{'active':view=='saved'}" class="dashboard-action"> <img src="@/assets/images/student1.png" alt="student"/> Saved Sheets</li>
                 <li @click="selectView('more')" :class="{'active':view=='more'}" class="dashboard-action">+ More...</li>
             </ul>
         </aside>

@@ -4,9 +4,13 @@
             <div class="img-div">
                 <img src="@/assets/images/ans-sheet.png" alt="sheet image">
             </div>
-            <div class=" bg-blue-500 text-white w-full py-4 px-2">
-                {{quiz.sheet_name}}
+            <div class="flex justify-center bg-blue-500 text-white w-full py-4 px-2">
+                <div style="width:max-content;" class="mx-auto text-left">
+                    <div>{{quiz.sheet_name}}</div>
+                    <div class="text-sm text-gray-300">{{quiz.created.split('T')[0]}}</div>
+                </div>
             </div>
+           
         </div>
 
         <div v-if="!quizes||quizes.length===0" class="no-quiz">
@@ -33,8 +37,9 @@
 
         methods:{
 
-            showSheetPreview(quiz){
-                let previewObj = {...quiz, choiceList:this.$store.dispatch('generateChoicesOptions',quiz)};
+            async showSheetPreview(quiz){
+                const choice_list = await this.$store.dispatch('generateChoicesOptions',quiz);
+                let previewObj = {...quiz, choiceList:choice_list};
                 this.$store.dispatch('setCurrentSheet',previewObj);
 
                 this.$router.push(`/view-sheet/${previewObj.id}`);
@@ -72,6 +77,7 @@
         grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
         column-gap:10px;
         row-gap:10px;
+        align-items: flex-start;
         min-height: calc(100vh - 80px);
         position:relative;
 
