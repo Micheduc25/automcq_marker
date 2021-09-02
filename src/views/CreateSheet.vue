@@ -140,6 +140,7 @@
                 answersRemarks:{},
                 markAllocation:{},
                 answersPercentages:{},
+
                 formData:{
                     university:"",
                     school:"",
@@ -297,6 +298,7 @@
             
             if(this.$route.query.mode==='edit')this.isEditMode=true;
 
+            //if we are in edit mode we set the values of the form fields to the current values of the sheet model
             if(this.isEditMode && this.$route.query.sheetid){
                 const loader = this.$loading.show();
                 this.$store.dispatch('getQuiz',this.$route.query.sheetid).then(

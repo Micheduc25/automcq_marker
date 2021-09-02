@@ -50,8 +50,8 @@ import CustomInput from '../../components/CustomInput.vue'
                 }
                 else this.formErrors.passwordError='';
 
-                if(this.formData.username.length==0){
-                    this.formErros.usernameError="Username field should not be empty";
+                if(this.formData.username.length===0){
+                    this.formErrors.usernameError="Username field should not be empty";
                     isCredentialsValid = false;
                 }
                 else this.formErrors.usernameError = '';
@@ -71,17 +71,17 @@ import CustomInput from '../../components/CustomInput.vue'
                         this.formData.password = '';
                         this.formData.rememberMe = false;
                         if(this.$route.query.nextUrl){
-                            this.$router.replace(this.$route.query.nextUrl);
+                            await this.$router.replace(`${this.$route.query.nextUrl}`);
 
                         }
                         else{
-                            this.$router.replace('/dashboard');
+                           await this.$router.replace('/dashboard');
                         }
                     }
                     catch(err){
                         this.$swal({
                             title:'Login Error',
-                            text:`${err}`,
+                            text:`${err?err.toString():'An unknown error occured'}`,
                             showCloseButton: true,
                             icon:'error'
                         })

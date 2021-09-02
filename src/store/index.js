@@ -92,7 +92,9 @@ export default createStore({
             commit('setIsLoggedInMut',true);
             resolve({token:res.data.token, user:res.data.user});
           }).catch(err=>{
-            reject(err.response);
+           if(err.response.data.non_field_errors) reject(err.response.data.non_field_errors[0])
+
+           reject(err.response.data);
           })
       });
     },
@@ -233,8 +235,24 @@ export default createStore({
         }
       }).then(res=>resolve(res)).catch(err=>reject(err));
       // commit('');
+      
     });
   },
+  // eslint-disable-next-line no-unused-vars
+  batchCorrectSheets({state},sheet_ids){
+
+    return new Promise((resolve,reject)=>{
+      axios.post(`${apiUrl}/batch-correct/`,{sheets:sheet_ids},{
+        headers:{
+          'Authorization': `Token ${state.token||localStorage.getItem('auth-token')}`,
+
+        }
+      }).then(res=>resolve(res.data)).catch(err=>reject(err.response));
+      // commit('');
+    });
+  },
+
+
 
   // eslint-disable-next-line no-unused-vars
   saveQuizImages({commit,state},formData){

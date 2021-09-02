@@ -4,9 +4,9 @@
             <h3 class="font-bold text-left  mt-4 mb-6 text-xl">Dashboard</h3>
 
             <ul class="actions-list">
-                <li @click="selectView('sheets')" :class="{'active':view=='sheets'}"  class="dashboard-action" > <img src="@/assets/images/exam1.png" alt="exam" /> My Sheets</li>
-                <li @click="selectView('saved')" :class="{'active':view=='saved'}" class="dashboard-action"> <img src="@/assets/images/student1.png" alt="student"/> Saved Sheets</li>
-                <li @click="selectView('more')" :class="{'active':view=='more'}" class="dashboard-action">+ More...</li>
+                <li @click="selectView('sheets')" :class="{'active':view==='sheets'}"  class="dashboard-action" > <img src="@/assets/images/exam1.png" alt="exam" /> My Sheets</li>
+                <li @click="selectView('saved')" :class="{'active':view==='saved'}" class="dashboard-action"> <img src="@/assets/images/student1.png" alt="student"/> Saved Sheets</li>
+                <li @click="selectView('more')" :class="{'active':view==='more'}" class="dashboard-action">+ More...</li>
             </ul>
         </aside>
 

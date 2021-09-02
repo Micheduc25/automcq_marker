@@ -6,7 +6,7 @@
             </div>
             <div class="flex justify-center bg-blue-500 text-white w-full py-4 px-2">
                 <div style="width:max-content;" class="mx-auto text-left">
-                    <div>{{quiz.sheet_name}}</div>
+                    <div class="overflow-ellipsis">{{quiz.sheet_name}}</div>
                     <div class="text-sm text-gray-300">{{quiz.created.split('T')[0]}}</div>
                 </div>
             </div>
