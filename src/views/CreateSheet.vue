@@ -17,18 +17,18 @@
             </div>
 
             <!-- this is step 2 -->
-            <div class="step2" v-show="step==2">
+            <div class="step2" v-show="step===2">
                   
                 <h3 class="text-center text-xl font-bold @apply mb-2">Course Information</h3>
                 <custom-input placeholder="Course name" label="Course" v-model="formData.course" name="course" id="course"/>
                 <custom-input placeholder="Course code" label="Code" v-model="formData.code" name="code" id="code"/>
-                <custom-input placeholder="Course credit value" label="Credit Value" v-model="formData.credit" name="credit" id="credit"/>
+                <custom-input type="number" placeholder="Course credit value" label="Credit Value" v-model="formData.credit" name="credit" id="credit"/>
                 <custom-input placeholder="Instructor name" label="Instructor" v-model="formData.instructor" name="instructor" id="instructor"/>
 
             </div>
 
             <!-- this is step 3 -->
-            <div class="step3" v-show="step==3">
+            <div class="step3" v-show="step===3">
                   
                 <h3 class="text-center text-xl font-bold @apply mb-2">Sheet Description</h3>
                 <custom-select  label="Bubble Type" v-model="formData.bubble"  name="bubble-type" id="bubble-type" :options="['Squares', 'Circles']"/>
@@ -50,23 +50,23 @@
             </div>
 
             <!-- this is step 4 -->
-            <div class="step4" v-show="step==4 && formData.questions && formData.choices">
+            <div class="step4" v-show="step===4 && formData.questions && formData.choices">
                 <h3 class="text-center text-xl font-bold @apply mb-3">
                     Correct Answers and Remarks
                 </h3>
 
-                <div class="qs flex items-center  mb-3 mx-auto" v-for="num in parseInt(formData.questions)" :key="`Q${num}`">
-                    <div class="mr-2">Q{{num}}</div>
+                <div class="qs flex items-center  mb-3 mx-auto" v-for="question in questions_data" :key="`Q${question.q_number}`">
+                    <div class="mr-2">Q{{question.q_number}}</div>
 
-                    <checkbox-group @valuesChanged="chkdAnswersChanged($event,num)" v-model="correctAnswers[`${num}`]"  :options="generateChoicesOptions()" :id="`ansopts${num}`" :name="`ansopts${num}`" />
+                    <checkbox-group @valuesChanged="chkdAnswersChanged($event,question.q_number)" v-model="question.correct_ans"  :options="generateChoicesOptions()" :id="`ansopts${question.q_number}`" :name="`ansopts${question.q_number}`" />
                     
                     <div class="marks-distribution flex items-center">
                         <custom-input 
-                        v-model="markAllocation[`${num}`]" 
+                        v-model="question.total_mark"
                         type="number" 
                         label="Mark(s)"  
-                        :id="`q${num}-mark`" 
-                        :name="`q${num}-mark`" 
+                        :id="`q${question.q_number}-mark`"
+                        :name="`q${question.q_number}-mark`"
                         placeholder="Enter Mark" 
                         class="mr-3 mark-input"
                         :required="true"
@@ -74,17 +74,18 @@
                         />
 
                         <!-- we produce boxes to specify the percentage value for each answer for a question -->
-                       <template v-if="correctAnswers[`${num}`] && answersPercentages[`${num}`]">
+                       <template v-if="question.correct_ans.length>0">
                             <div class="percentage flex items-center mr-2" 
-                            v-for="(ans,index) in correctAnswers[`${num}`].split(' ')" 
-                            :key="`${num}perdiv${index}`">
+                            v-for="(ans,index) in question.correct_ans"
+                            :key="`${question.q_number}perdiv${index}`">
                                 <span>{{ans}}%</span>
                                 <input type="number" 
-                                :name="`percent${num}${index}`" 
-                                :id="`percent${num}${index}`" 
+                                :name="`percent${question.q_number}${index}`"
+                                :id="`percent${question.q_number}${index}`"
                                 :required="true"
-                                v-model="answersPercentages[`${num}`][`${ans}`]"
-                                :min="0" :max="100">
+                                v-model="question.mark_distribution[index]"
+                                :min="0" :max="100"
+                                >
                             </div>
                         </template>
 
@@ -106,8 +107,8 @@
             <!-- <div>{{formData.questions}}</div> -->
 
             <div  class="nav-but flex justify-end">
-                <button @click.prevent="prevStep()" :class="{'bg-gray-400':step==1,'bg-blue-600':step!=1}" class="focus:outline-none  px-8 py-2 rounded-sm text-white mr-2">Prev</button>
-                <button v-show="step<4" @click.prevent="nextStep()" :class="{'bg-gray-400':step==4,'bg-blue-600':step!=4}" class=" focus:outline-none px-8 py-2 rounded-sm text-white">Next</button>
+                <button @click.prevent="prevStep()" :class="{'bg-gray-400':step===1,'bg-blue-600':step!==1}" class="focus:outline-none  px-8 py-2 rounded-sm text-white mr-2">Prev</button>
+                <button v-show="step<4" @click.prevent="nextStep()" :class="{'bg-gray-400':step===4,'bg-blue-600':step!==4}" class=" focus:outline-none px-8 py-2 rounded-sm text-white">Next</button>
                 <button v-show="step===4" @click.prevent="validateForm"  class=" focus:outline-none px-8 py-2 rounded-sm text-white bg-blue-600">{{isEditMode?'Save':'Validate'}}</button>
             </div>
             
@@ -136,11 +137,17 @@
                 numeric:['1','2','3','4','5'],
                 inMounted:true,
                 isEditMode:false,
-                correctAnswers:{},
-                answersRemarks:{},
-                markAllocation:{},
-                answersPercentages:{},
 
+                questions_data:[
+                  {
+                    q_number:0,
+                    correct_ans:[],
+                    wrong_ans:[],
+                    mark_distribution:[], //array which contains mark distribution according to correct answers
+                    total_mark:1,
+                    remark:''
+                  }
+                ], // an array that contains a list of questions and their properties
                 formData:{
                     university:"",
                     school:"",
@@ -148,13 +155,13 @@
                     classe:"",
                     course:"",
                     code:"",
-                    credit:"",
+                    credit:0,
                     instructor:"",
                     bubble:"Circles",
                     questions:"10",
                     choices:"4",
                     choiceLabels:"A-B-C",
-                    failMark:"0",
+                    failMark:0,
                     sheet_name:""
                 },          
 
@@ -162,7 +169,7 @@
         },
 
         computed:{
-            ...mapGetters(['isFirstrun','currentSheet'])
+            ...mapGetters(['currentSheet'])
         },
 
         methods:{
@@ -178,7 +185,18 @@
                 if(this.step>1)this.step--;
             },
 
-            
+          getAnsMaxPercentage(question){
+            let max = 100.0;
+            if(question.mark_distribution.length===1) return max;
+
+            for(let p of question.mark_distribution){
+              max -= p;
+            }
+
+            return max;
+
+          },
+
             generateChoicesOptions(){
                 const choiceNums = parseInt(this.formData.choices);
                 if(this.formData.choiceLabels==="A-B-C"){
@@ -192,35 +210,51 @@
                 }
             },
 
+          getWrongAnswers(q_number){
+            //we filter the choices array to get the wrong choices and add the to the wrong choices array
+            // for that question
+            return this.generateChoicesOptions()
+                .filter(
+                    c => !this.questions_data[q_number-1].correct_ans.includes(c)
+                )
+          },
+
             onQuestionsChanged(val){
 
                 if(val!== this.formData.questions || this.inMounted){
                     const defaultVal = this.generateChoicesOptions()[0];
 
-                    this.correctAnswers = {};
-                    this.answersRemarks = {};
-                    this.markAllocation = {};
-                    this.answersPercentages = {};
+                    let new_questions_data = []
 
-                    for(let i=1; i<=parseInt(val);i++){
+                  // we initialize back questions data when the questions numbers are updated
+                  //we make sure previous values are not lost
+                  for(let i=1; i<=parseInt(val);i++){
+                      new_questions_data.push({
+                        q_number:i,
+                        correct_ans: this.questions_data[i-1] && this.questions_data[i-1].correct_ans[0]?this.questions_data[i-1].correct_ans: [defaultVal],
+                        wrong_ans: this.questions_data[i-1] && this.questions_data[i-1].wrong_ans[0]?this.questions_data[i-1].wrong_ans: this.generateChoicesOptions().slice(1),
+                        mark_distribution:this.questions_data[i-1] && this.questions_data[i-1].mark_distribution[0]?this.questions_data[i-1].mark_distribution: [100.0],
+                        total_mark:this.questions_data[i-1] && this.questions_data[i-1].total_mark?this.questions_data[i-1].total_mark:1,
+                        remark:this.questions_data[i-1] && this.questions_data[i-1].remark?this.questions_data[i-1].remark:''
+                      })
 
-                        this.correctAnswers[`${i}`] = defaultVal;
-                        this.answersRemarks[`${i}`] = "no remark";
-                        this.markAllocation[`${i}`] = "1";
-                        this.answersPercentages[`${i}`]={};
-                        this.answersPercentages[`${i}`][defaultVal]="100";
                     }
-                    console.log(this.answersPercentages);
+                    this.questions_data = new_questions_data;
                 }
             },
 
-            chkdAnswersChanged(values,question){
+            chkdAnswersChanged(values,q_number){
                 //when the checked answers for a question changes, we reinitialize its percentages
-                this.answersPercentages[`${question}`] = {};
+                this.questions_data[q_number-1].mark_distribution=[];
                  const averagePercentage = (100 /values.length).toFixed(1);
-                for(let val of values) {                 
-                    this.answersPercentages[`${question}`][val] = `${averagePercentage}`;                   
+              // eslint-disable-next-line no-unused-vars
+                for(let val of values) {
+                    this.questions_data[q_number-1].mark_distribution.push(averagePercentage);
                     }
+
+                //we filter the choices array to get the wrong choices and add the to the wrong choices array
+               // for that question
+                this.questions_data[q_number-1].wrong_ans = this.getWrongAnswers(q_number)
             },
 
             async validateForm(){
@@ -235,30 +269,25 @@
                 }
                 else{
 
-                    this.formData.correctAnswers = Object.values(this.correctAnswers);
-
-                    //total mark for each question
-                    this.formData.marksAllocation = Object.values(this.markAllocation);
-
-                    this.formData.remarks = Object.values(this.answersRemarks);
 
                     this.formData.choiceList= this.generateChoicesOptions();
-                    
-                    //how marks are shared amongst correct answers for each question
-                    this.formData.marksDistribution = [];
-                    const markPercentages = Object.values(this.answersPercentages);       
-                    for(let dist of markPercentages){
-                        let temp = [];
-                        for(let key of Object.keys(dist)){
-                            temp.push(`${key} ${dist[key]}`);
-                        }
-                        this.formData.marksDistribution.push(`${temp.join(';')}`);
-                    }
-                    console.log(this.formData.marksDistribution);
 
+                    //in edit mode we delete the previous question data and replace it with the new one
+                    if(this.isEditMode){
+                      delete this.formData.questions_data;
+
+                      for (let q of this.questions_data){
+                        delete q.sheet;
+                      }
+
+                    }
+                    this.formData.questions_data = this.questions_data;
+                    
 
                     const loader = this.$loading.show();
                     try{
+
+                      console.log(this.formData);
                         let newSheet;
                         if(!this.isEditMode){
                             newSheet = await this.createQuiz(this.formData);
@@ -271,11 +300,12 @@
                             text:`Sheet ${!this.isEditMode?'created':'modified'} successfully`,
                             icon:'success',
                             timer:5000,
+                            position:'left-bottom',
                             showConfirmButton:false
                         })
 
                         console.log(newSheet);
-                        this.$router.push( `/view-sheet/${newSheet.id}`);
+                        // await this.$router.push( `/view-sheet/${newSheet.id}`);
 
                     }
                     catch(err){
@@ -305,30 +335,9 @@
                     res=>{
                         
                         this.formData = {...res, choices:res.choices.toString(),
-                         questions:res.questions.toString(), credit:res.credit.toString(), failMark:res.failMark.toString() };
+                         questions:res.questions.toString()};
+                        this.questions_data = this.formData.questions_data.sort((q_b, q_a)=>q_b.q_number - q_a.q_number);
 
-                        for(let i=0; i<parseInt(this.formData.questions); i++){
-                            this.answersRemarks[`${i}`]= this.formData.remarks[i];
-                            this.correctAnswers[`${i}`] = this.formData.correctAnswers[i];
-                            this.markAllocation[`${i}`] = this.formData.marksAllocation[i];  
-                            
-                            
-                        }
-
-                        let i = 0;
-                        for (let dist of this.formData.marksDistribution){
-                            let dist_map = {}
-                            const dist_splitted = dist.split(";")
-                            for (let val of dist_splitted){
-                                const ans = val.split(" ")[0]
-                                const percentage = val.split(" ")[1]
-                                dist_map[ans] = percentage
-                            }
-
-                            this.answersPercentages[`${i}`] = dist_map
-                            i++;
-                            }
-                        console.log(this.answersPercentages)
                     }
                     
                     ).catch(err=>{

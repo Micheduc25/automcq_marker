@@ -12,7 +12,7 @@
     export default {
         name:"CustomInput",
         props:{
-            modelValue:String,
+            modelValue:[String,Number,Boolean],
             type:{
                 default:'text',
                 type:String

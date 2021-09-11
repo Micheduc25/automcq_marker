@@ -276,7 +276,78 @@ export default createStore({
   logoutUser({commit}){
     localStorage.removeItem('auth-token');
     commit('clearUserDataMut');
-  }
+  },
+
+  ///STUDENTS///
+
+    // eslint-disable-next-line no-unused-vars
+    fetchStudents({commit,state},sheet_id){
+      return new Promise((resolve,reject)=>{
+        axios.get(`${apiUrl}/students/?sheet_id=${sheet_id}`,{
+          headers:{
+            'Authorization': `Token ${state.token||localStorage.getItem('auth-token')}`,
+
+          }
+        }).then(res=>{
+          const data = res.data;
+          resolve(data);
+
+        })
+            .catch(err=>reject(err.response));
+        // commit('');
+      });
+    },
+
+    addStudent({state}, {sheet_id,student_data}){
+      return new Promise((resolve,reject)=>{
+        axios.post(`${apiUrl}/students/?sheet_id=${sheet_id}`,student_data,{
+          headers:{
+            'Authorization': `Token ${state.token||localStorage.getItem('auth-token')
+            }`,
+          }
+        }).then(res=>{
+          const data = res.data;
+          resolve(data);
+
+        })
+            .catch(err=>reject(err.response));
+        // commit('');
+      });
+    },
+
+    editStudent({state},{code,sheet_id,student_data}){
+      return new Promise((resolve,reject)=>{
+        axios.put(`${apiUrl}/students/${code}/?sheet_id=${sheet_id}`,student_data,{
+          headers:{
+            'Authorization': `Token ${state.token||localStorage.getItem('auth-token')}`,
+
+          }
+        }).then(res=>{
+          const data = res.data;
+          resolve(data);
+
+        })
+            .catch(err=>reject(err.response));
+        // commit('');
+      });
+    },
+
+    deleteStudent({state}, {code,sheet_id}){
+      return new Promise((resolve,reject)=>{
+        axios.delete(`${apiUrl}/students/${code}/?sheet_id=${sheet_id}`,{
+          headers:{
+            'Authorization': `Token ${state.token||localStorage.getItem('auth-token')}`,
+
+          }
+        }).then(res=>{
+          const data = res.data;
+          resolve(data);
+
+        })
+            .catch(err=>reject(err.response));
+        // commit('');
+      });
+    }
 },
 
   getters:{

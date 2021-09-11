@@ -78,7 +78,7 @@ import CustomInput from '../../components/CustomInput.vue'
                 else this.formErrors.usernameError='';
 
 
-                if(!this.formData.email.match('')){
+                if(! /.+@.+\..+/.test(this.formData.email)){
                     this.formErrors.emailError = "Email should have format 'random@random.xxx'";
                     isCredentialsValid=false;
                 }

@@ -72,6 +72,7 @@ const routes = [
     
     component: () => import(/* webpackChunkName: "viewsheet" */ '../views/Dashboard.vue')
   },
+
   {
     path: '/profile',
     name: 'profile',
@@ -79,7 +80,7 @@ const routes = [
       requiresAuth:true
     },
     
-    component: () => import(/* webpackChunkName: "viewsheet" */ '../views/Profile.vue')
+    component: () => import(/* webpackChunkName: "viewsheet" */ '../components/dashboard/Students.vue')
   }
 ]
 

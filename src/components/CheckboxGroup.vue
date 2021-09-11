@@ -25,7 +25,7 @@
         },
 
         props:{
-            modelValue:String,
+            modelValue:Array,
 
             options:{
                 type:Array,
@@ -46,15 +46,15 @@
                     
                 }
                 // console.log(selected);
-                this.$emit("update:modelValue",selected.join(' '));
+                this.$emit("update:modelValue",selected);
                 this.$emit("valuesChanged",selected);
             }
         },
         watch:{
             modelValue(newVal,oldVal){
                 if(oldVal===undefined&&newVal!==undefined){
-                    let valuesArray = this.modelValue.split(' ');
-                    for(let val of valuesArray){
+
+                    for(let val of this.modelValue){
                         this.selectedOptions[val]=true;
                     }
                 }
@@ -66,8 +66,8 @@
                  this.selectedOptions[this.options[index]]=false;
             }
             if(this.modelValue){
-                    let valuesArray = this.modelValue.split(' ');
-                    for(let val of valuesArray){
+
+                    for(let val of this.modelValue){
                         this.selectedOptions[val]=true;
                     }
                 }
