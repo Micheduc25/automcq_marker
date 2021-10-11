@@ -38,11 +38,14 @@
         methods:{
 
             async showSheetPreview(quiz){
-                const choice_list = await this.$store.dispatch('generateChoicesOptions',quiz);
+                const choice_list = this.$store.dispatch('generateChoicesOptions',quiz);
+                console.log(choice_list);
                 let previewObj = {...quiz, choiceList:choice_list};
                 this.$store.dispatch('setCurrentSheet',previewObj);
 
                 this.$router.push(`/view-sheet/${previewObj.id}`);
+                // const a = new Promise();
+                
             }
         },
         created(){

@@ -61,6 +61,12 @@
   * @import "utilities/skew-transforms";
   */
 
+  *,*::after,*::before{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
   /* Tooltip container */
   .tooltip {
     position: relative;
@@ -107,3 +113,5 @@
   .fade-enter, .fade-leave-to {
     opacity: 0;
   }
+
+  

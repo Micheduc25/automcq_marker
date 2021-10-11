@@ -49,19 +49,19 @@ const routes = [
     path: '/auth/login',
     name: 'login',
     
-    component: () => import(/* webpackChunkName: "viewsheet" */ '../views/auth/Login.vue')
+    component: () => import(/* webpackChunkName: "login" */ '../views/auth/Login.vue')
   },
   {
     path: '/auth/signup',
     name: 'signup',
     
-    component: () => import(/* webpackChunkName: "viewsheet" */ '../views/auth/Signup.vue')
+    component: () => import(/* webpackChunkName: "signup" */ '../views/auth/Signup.vue')
   },
   {
     path: '/404',
     name: 'notfound',
     
-    component: () => import(/* webpackChunkName: "viewsheet" */ '../views/404.vue')
+    component: () => import(/* webpackChunkName: "notfound" */ '../views/404.vue')
   },
   {
     path: '/dashboard',
@@ -70,7 +70,25 @@ const routes = [
       requiresAuth:true
     },
     
-    component: () => import(/* webpackChunkName: "viewsheet" */ '../views/Dashboard.vue')
+    component: () => import(/* webpackChunkName: "dashboard" */ '../views/Dashboard.vue')
+  },
+  {
+    path: '/results',
+    name: 'results',
+    meta:{
+      requiresAuth:true
+    },
+    
+    component: () => import(/* webpackChunkName: "results" */ '../views/results/Results.vue')
+  },
+  {
+    path: '/results/:code',
+    name: 'results_details',
+    meta:{
+      requiresAuth:true
+    },
+    
+    component: () => import(/* webpackChunkName: "results_details" */ '../views/results/ResultsDetails.vue')
   },
 
   {
@@ -80,7 +98,7 @@ const routes = [
       requiresAuth:true
     },
     
-    component: () => import(/* webpackChunkName: "viewsheet" */ '../components/dashboard/Students.vue')
+    component: () => import(/* webpackChunkName: "profile" */ '../views/Profile.vue')
   }
 ]
 

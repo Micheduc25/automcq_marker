@@ -26,7 +26,7 @@
           <img src="@/assets/images/trash.png" alt="edit" />
         </button>
       </div>
-      <div class="tooltip">
+      <div class="tooltip mr-2">
         <span class="tooltiptext">
           Students
         </span>
@@ -36,6 +36,19 @@
         >
           <img class="w-8" src="@/assets/images/student.png" alt="students" />
         </button>
+      </div>
+      <div class="tooltip">
+        <span class="tooltiptext">
+          Results
+        </span>
+        <router-link
+          :to="{
+            path: '/results',
+            query: {sheet_id: $route.params.id },
+          }"
+          class="sheet-option block cursor-pointer p-1 bg-green-600"
+          ><img src="@/assets/images/results.png" alt="results"
+        /></router-link>
       </div>
     </div>
     <sheet-preview
@@ -48,7 +61,7 @@
       :students="students"
       v-if="showStudents"
       :sheet-id="$store.getters.currentSheet.id"
-      :sheet-name="$store.getters.currentSheet.sheetName"
+      :sheet-name="$store.getters.currentSheet.sheet_name"
       @closeView="showStudents=false"
     />
 
